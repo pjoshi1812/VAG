@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const RegistrationForm = () => {
+  const navigate = useNavigate(); 
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -37,6 +39,7 @@ const RegistrationForm = () => {
       });
 
       alert(response.data.message || "Registration successful!");
+      navigate("/gallery");
     } catch (error) {
       alert(error.response?.data?.message || "Something went wrong");
     }

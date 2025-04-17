@@ -5,6 +5,7 @@ import Footer from './components/Common/footer';
 import RegistrationForm from './components/Pages/registration';
 import LoginForm from './components/Pages/login';
 import Home from './components/Pages/home';
+import ArtistProfilePage from './components/Pages/ArtistProfilePage';
 
 
 //const Home = () => <h1 className="p-4">Welcome to Home Page</h1>;
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/registration" element={<RegistrationForm />} />
         <Route path="/login" element={<LoginForm />} />
+        <Route path='/artistprofilepage' element={<ArtistProfilePage />} />
       </Routes>
       
       <Footer />

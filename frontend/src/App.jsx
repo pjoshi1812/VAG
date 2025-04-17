@@ -8,6 +8,7 @@ import Home from './components/Pages/home';
 import ArtistProfilePage from './components/Pages/ArtistProfilePage';
 
 
+
 //const Home = () => <h1 className="p-4">Welcome to Home Page</h1>;
 const About = () => <h1 className="p-4">About Us</h1>;
 const Contact = () => <h1 className="p-4">Contact Us</h1>;
@@ -26,6 +27,8 @@ const App = () => {
         <Route path="/registration" element={<RegistrationForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path='/artistprofilepage' element={<ArtistProfilePage />} />
+
+        
       </Routes>
       
       <Footer />

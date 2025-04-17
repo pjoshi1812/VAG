@@ -1,8 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const ArtistProfilePage = () => {
   const [artworks, setArtworks] = useState([]);
-  const [newArt, setNewArt] = useState({ title: '', description: '', image: null });
+  const [newArt, setNewArt] = useState({ title: '', description: '', image: null, imageUrl: '' });
+  const [selectedArtworkId, setSelectedArtworkId] = useState(null);
+
+  useEffect(() => {
+    fetchArtworks();
+  }, []);
+
+  const fetchArtworks = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/artworks');
+      setArtworks(res.data);
+    } catch (err) {
+      console.error('Error fetching artworks:', err);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -10,18 +25,80 @@ const ArtistProfilePage = () => {
   };
 
   const handleImageChange = (e) => {
-    setNewArt({ ...newArt, image: URL.createObjectURL(e.target.files[0]) });
+    setNewArt({ ...newArt, image: e.target.files[0] });
   };
 
-  const handleUpload = () => {
-    if (newArt.title && newArt.description && newArt.image) {
-      setArtworks([...artworks, { ...newArt, id: Date.now() }]);
-      setNewArt({ title: '', description: '', image: null });
+  const handleUpload = async () => {
+    if (!newArt.title || !newArt.description) {
+      return alert('Please fill all fields');
+    }
+
+    const formData = new FormData();
+    formData.append('title', newArt.title);
+    formData.append('description', newArt.description);
+    if (newArt.image) {
+      formData.append('image', newArt.image);
+    }
+
+    try {
+      let res;
+      if (selectedArtworkId) {
+        // Update existing artwork
+        res = await axios.put(
+          `http://localhost:5000/api/artworks/${selectedArtworkId}`,
+          formData,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+      } else {
+        // Upload new artwork
+        res = await axios.post(
+          'http://localhost:5000/api/artworks/upload',
+          formData,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+      }
+
+      if (selectedArtworkId) {
+        // Replace the edited artwork in the gallery
+        setArtworks(
+          artworks.map((art) => (art._id === selectedArtworkId ? res.data : art))
+        );
+      } else {
+        // Add the newly uploaded artwork to the gallery
+        setArtworks([res.data, ...artworks]);
+      }
+
+      setNewArt({ title: '', description: '', image: null, imageUrl: '' });
+      setSelectedArtworkId(null); // Reset the selected artwork after saving changes
+    } catch (err) {
+      alert('Operation failed');
+      console.error(err);
     }
   };
 
-  const handleDelete = (id) => {
-    setArtworks(artworks.filter((art) => art.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/artworks/${id}`);
+      setArtworks(artworks.filter((art) => art._id !== id));
+    } catch (err) {
+      console.error('Failed to delete:', err);
+    }
+  };
+
+  const handleEdit = (art) => {
+    // Set the artwork data into the form for editing
+    setNewArt({
+      title: art.title,
+      description: art.description,
+      imageUrl: art.imageUrl,  // Keep the original image URL if not updating
+      image: null,  // Remove the image data so it doesn't get resubmitted
+    });
+    setSelectedArtworkId(art._id);  // Set the ID of the artwork to edit
+  };
+
+  const handleCancelEdit = () => {
+    setNewArt({ title: '', description: '', image: null, imageUrl: '' });
+    setSelectedArtworkId(null); // Reset to show the upload form
   };
 
   return (
@@ -41,9 +118,11 @@ const ArtistProfilePage = () => {
         </div>
       </div>
 
-      {/* Upload Form */}
+      {/* Upload or Edit Form */}
       <div className="bg-white p-6 rounded-xl shadow-md mb-10">
-        <h3 className="text-xl font-semibold mb-4">Upload Your Artwork</h3>
+        <h3 className="text-xl font-semibold mb-4">
+          {selectedArtworkId ? 'Edit Artwork' : 'Upload Your Artwork'}
+        </h3>
         <div className="flex flex-col md:flex-row gap-4">
           <input
             type="text"
@@ -66,8 +145,16 @@ const ArtistProfilePage = () => {
             onClick={handleUpload}
             className="bg-pink-600 text-white px-6 py-2 rounded hover:bg-pink-700"
           >
-            Upload
+            {selectedArtworkId ? 'Save Changes' : 'Upload'}
           </button>
+          {selectedArtworkId && (
+            <button
+              onClick={handleCancelEdit}
+              className="text-gray-500 hover:underline"
+            >
+              Cancel Edit
+            </button>
+          )}
         </div>
       </div>
 
@@ -80,20 +167,25 @@ const ArtistProfilePage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {artworks.map((art) => (
               <div
-                key={art.id}
+                key={art._id}
                 className="bg-white p-4 rounded-xl shadow-md flex flex-col"
               >
                 <img
-                  src={art.image}
+                  src={`http://localhost:5000${art.imageUrl}`}
                   alt={art.title}
                   className="w-full h-48 object-cover rounded mb-3"
                 />
                 <h4 className="text-lg font-bold">{art.title}</h4>
                 <p className="text-sm text-gray-600 mb-2">{art.description}</p>
                 <div className="flex gap-2 mt-auto">
-                  <button className="text-blue-600 hover:underline">Edit</button>
                   <button
-                    onClick={() => handleDelete(art.id)}
+                    onClick={() => handleEdit(art)}
+                    className="text-blue-600 hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(art._id)}
                     className="text-red-600 hover:underline"
                   >
                     Delete

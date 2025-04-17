@@ -6,12 +6,14 @@ import RegistrationForm from './components/Pages/registration';
 import LoginForm from './components/Pages/login';
 import Home from './components/Pages/home';
 import ArtistProfilePage from './components/Pages/ArtistProfilePage';
+import Gallery from './components/Pages/gallery';
+import ArtworkDetail from './components/Pages/ArtworkDetail.jsX';
 
 
 
 //const Home = () => <h1 className="p-4">Welcome to Home Page</h1>;
-const About = () => <h1 className="p-4">About Us</h1>;
-const Contact = () => <h1 className="p-4">Contact Us</h1>;
+
+
 
 const App = () => {
   return (
@@ -22,13 +24,11 @@ const App = () => {
       <Routes>
     
         <Route path="/" element={<Home />}/>
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/gallery" element={<Gallery/>}/>
         <Route path="/registration" element={<RegistrationForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path='/artistprofilepage' element={<ArtistProfilePage />} />
-
-        
+        <Route path="/artwork/:id" element={<ArtworkDetail/>}/>
       </Routes>
       
       <Footer />

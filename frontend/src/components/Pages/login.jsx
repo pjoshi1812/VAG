@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Importing useNavigate
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,8 +23,9 @@ const LoginForm = () => {
       setMessage(data.message);
 
       if (res.ok) {
-        console.log(" Login successful or new user saved!");
-        // Optionally redirect or do more here
+        console.log("Login successful or new user saved!");
+        // Redirect to the artist profile page after successful login
+        navigate('/artistprofilepage');
       } else {
         console.error("Login failed:", data.message);
       }

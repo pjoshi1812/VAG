@@ -9,26 +9,20 @@ const Header = () => {
           ArtistryHub 🎨
         </Link>
         <nav className="space-x-8 text-lg font-medium">
-          {/* <Link
-            to="/home"
-            className="text-gray-800 hover:text-purple-600 transition duration-300 ease-in-out"
-          >
-            Home
-          </Link> */}
           <Link
             to="/about"
             className="text-gray-800 hover:text-purple-600 transition duration-300 ease-in-out"
           >
-            
             About
           </Link>
 
           <Link
-            to="/login "
+            to="/login"
             className="text-gray-800 hover:text-purple-600 transition duration-300 ease-in-out"
           >
             Login
           </Link>
+
           <Link
             to="/registration"
             className="text-gray-800 hover:text-purple-600 transition duration-300 ease-in-out"
@@ -36,20 +30,26 @@ const Header = () => {
             Register
           </Link>
 
-
-
-
           <Link
             to="/gallery"
             className="text-gray-800 hover:text-purple-600 transition duration-300 ease-in-out"
           >
             Gallery
           </Link>
+
           <Link
             to="/contact"
             className="text-gray-800 hover:text-purple-600 transition duration-300 ease-in-out"
           >
             Contact
+          </Link>
+
+          {/* Add the Profile link */}
+          <Link
+            to="/artistprofilepage"
+            className="text-gray-800 hover:text-purple-600 transition duration-300 ease-in-out"
+          >
+            Profile
           </Link>
         </nav>
       </div>

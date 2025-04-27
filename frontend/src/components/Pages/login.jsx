@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Importing useNavigate
+import { useNavigate } from "react-router-dom"; 
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,9 +23,19 @@ const LoginForm = () => {
       setMessage(data.message);
 
       if (res.ok) {
-        console.log("Login successful or new user saved!");
-        // Redirect to the artist profile page after successful login
-        navigate('/artistprofilepage');
+        console.log("Login successful!");
+     
+        localStorage.setItem('user', JSON.stringify({
+          id: data.userId,
+          email: email,
+          userType: data.userType
+        }));
+        
+        if (data.userType === 'artist') {
+          navigate('/artistprofilepage');
+        } else {
+          navigate('/');
+        }
       } else {
         console.error("Login failed:", data.message);
       }

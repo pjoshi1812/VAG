@@ -7,12 +7,15 @@ const ArtistProfilePage = () => {
   const [selectedArtworkId, setSelectedArtworkId] = useState(null);
 
   useEffect(() => {
-    fetchArtworks();
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.id) {
+      fetchArtworks(user.id);
+    }
   }, []);
 
-  const fetchArtworks = async () => {
+  const fetchArtworks = async (userId) => {
     try {
-      const res = await axios.get('http://localhost:5000/api/artworks');
+      const res = await axios.get(`http://localhost:5000/api/artworks/artist/${userId}`);
       setArtworks(res.data);
     } catch (err) {
       console.error('Error fetching artworks:', err);
@@ -43,14 +46,14 @@ const ArtistProfilePage = () => {
     try {
       let res;
       if (selectedArtworkId) {
-        // Update existing artwork
+        
         res = await axios.put(
           `http://localhost:5000/api/artworks/${selectedArtworkId}`,
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         );
       } else {
-        // Upload new artwork
+       
         res = await axios.post(
           'http://localhost:5000/api/artworks/upload',
           formData,
@@ -59,17 +62,17 @@ const ArtistProfilePage = () => {
       }
 
       if (selectedArtworkId) {
-        // Replace the edited artwork in the gallery
+       
         setArtworks(
           artworks.map((art) => (art._id === selectedArtworkId ? res.data : art))
         );
       } else {
-        // Add the newly uploaded artwork to the gallery
+       
         setArtworks([res.data, ...artworks]);
       }
 
       setNewArt({ title: '', description: '', image: null, imageUrl: '' });
-      setSelectedArtworkId(null); // Reset the selected artwork after saving changes
+      setSelectedArtworkId(null); 
     } catch (err) {
       alert('Operation failed');
       console.error(err);
@@ -86,44 +89,35 @@ const ArtistProfilePage = () => {
   };
 
   const handleEdit = (art) => {
-    // Set the artwork data into the form for editing
+   
     setNewArt({
       title: art.title,
       description: art.description,
-      imageUrl: art.imageUrl,  // Keep the original image URL if not updating
-      image: null,  // Remove the image data so it doesn't get resubmitted
+      imageUrl: art.imageUrl,  
+      image: null,  
     });
-    setSelectedArtworkId(art._id);  // Set the ID of the artwork to edit
+    setSelectedArtworkId(art._id);  
   };
 
   const handleCancelEdit = () => {
     setNewArt({ title: '', description: '', image: null, imageUrl: '' });
-    setSelectedArtworkId(null); // Reset to show the upload form
+    setSelectedArtworkId(null); 
   };
 
   return (
-    <div className="p-6 md:p-12 bg-pink-50 min-h-screen">
+    <div className="p-4 sm:p-6 md:p-12 bg-pink-50 min-h-screen">
       {/* Artist Info */}
-      <div className="bg-white p-6 rounded-xl shadow-md mb-10 flex flex-col md:flex-row items-center md:items-start gap-6">
-        <img
-          src="#"
-          alt="Artist"
-          className="w-36 h-36 rounded-full border-4 border-pink-200 object-cover"
-        />
-        <div>
-          <h2 className="text-3xl font-bold mb-2">Priya Sharma</h2>
-          <p className="text-gray-600 mb-1">🎨 Abstract & Modern Artist</p>
-          <p className="text-sm text-gray-500">📍 Mumbai, India</p>
-          <p className="text-sm text-gray-500">Joined: Jan 2024</p>
-        </div>
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md mb-6 sm:mb-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-2">{JSON.parse(localStorage.getItem('user'))?.email || 'Artist'}</h2>
+        <p className="text-gray-600 mb-1">🎨 Artist</p>
       </div>
 
       {/* Upload or Edit Form */}
-      <div className="bg-white p-6 rounded-xl shadow-md mb-10">
-        <h3 className="text-xl font-semibold mb-4">
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md mb-6 sm:mb-10">
+        <h3 className="text-lg sm:text-xl font-semibold mb-4">
           {selectedArtworkId ? 'Edit Artwork' : 'Upload Your Artwork'}
         </h3>
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col gap-4">
           <input
             type="text"
             name="title"
@@ -141,52 +135,54 @@ const ArtistProfilePage = () => {
             className="border border-gray-300 p-2 rounded w-full"
           />
           <input type="file" onChange={handleImageChange} className="w-full" />
-          <button
-            onClick={handleUpload}
-            className="bg-pink-600 text-white px-6 py-2 rounded hover:bg-pink-700"
-          >
-            {selectedArtworkId ? 'Save Changes' : 'Upload'}
-          </button>
-          {selectedArtworkId && (
+          <div className="flex flex-col sm:flex-row gap-2">
             <button
-              onClick={handleCancelEdit}
-              className="text-gray-500 hover:underline"
+              onClick={handleUpload}
+              className="bg-pink-600 text-white px-6 py-2 rounded hover:bg-pink-700 w-full sm:w-auto"
             >
-              Cancel Edit
+              {selectedArtworkId ? 'Save Changes' : 'Upload'}
             </button>
-          )}
+            {selectedArtworkId && (
+              <button
+                onClick={handleCancelEdit}
+                className="text-gray-500 hover:underline w-full sm:w-auto text-center"
+              >
+                Cancel Edit
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Art Gallery */}
       <div>
-        <h3 className="text-xl font-semibold mb-4">Your Gallery</h3>
+        <h3 className="text-lg sm:text-xl font-semibold mb-4">Your Gallery</h3>
         {artworks.length === 0 ? (
           <p className="text-gray-500">No art uploaded yet.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {artworks.map((art) => (
               <div
                 key={art._id}
-                className="bg-white p-4 rounded-xl shadow-md flex flex-col"
+                className="bg-white p-3 sm:p-4 rounded-xl shadow-md flex flex-col"
               >
                 <img
                   src={`http://localhost:5000${art.imageUrl}`}
                   alt={art.title}
-                  className="w-full h-48 object-cover rounded mb-3"
+                  className="w-full h-32 sm:h-48 object-cover rounded mb-3"
                 />
-                <h4 className="text-lg font-bold">{art.title}</h4>
-                <p className="text-sm text-gray-600 mb-2">{art.description}</p>
+                <h4 className="text-base sm:text-lg font-bold">{art.title}</h4>
+                <p className="text-xs sm:text-sm text-gray-600 mb-2">{art.description}</p>
                 <div className="flex gap-2 mt-auto">
                   <button
                     onClick={() => handleEdit(art)}
-                    className="text-blue-600 hover:underline"
+                    className="text-blue-600 hover:underline text-sm"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(art._id)}
-                    className="text-red-600 hover:underline"
+                    className="text-red-600 hover:underline text-sm"
                   >
                     Delete
                   </button>

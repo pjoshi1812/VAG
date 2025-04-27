@@ -8,10 +8,11 @@ import Home from './components/Pages/home';
 import ArtistProfilePage from './components/Pages/ArtistProfilePage';
 import Gallery from './components/Pages/gallery';
 import ArtworkDetail from './components/Pages/ArtworkDetail.jsX';
+import ProtectedRoute from './components/Common/ProtectedRoute';
 
 
 
-//const Home = () => <h1 className="p-4">Welcome to Home Page</h1>;
+
 
 
 
@@ -24,10 +25,10 @@ const App = () => {
       <Routes>
     
         <Route path="/" element={<Home />}/>
-        <Route path="/gallery" element={<Gallery/>}/>
+        <Route path="/gallery" element={<ProtectedRoute element={<Gallery />} />} />
         <Route path="/registration" element={<RegistrationForm />} />
         <Route path="/login" element={<LoginForm />} />
-        <Route path='/artistprofilepage' element={<ArtistProfilePage />} />
+        <Route path='/artistprofilepage' element={<ProtectedRoute element={<ArtistProfilePage />} allowedRole="artist" />} />
         <Route path="/artwork/:id" element={<ArtworkDetail/>}/>
       </Routes>
       

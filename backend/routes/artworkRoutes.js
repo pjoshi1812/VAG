@@ -15,9 +15,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post("/upload", upload.single("image"), uploadArtwork);  // For artwork upload
-router.get("/", getArtworks);  // For fetching all artworks
-router.delete("/:id", deleteArtwork);  // For deleting an artwork
+router.post("/upload", upload.single("image"), uploadArtwork);  
+router.get("/", getArtworks);  
+router.delete("/:id", deleteArtwork);  
 router.put("/:id", upload.single("image"), updateArtwork);
 
 

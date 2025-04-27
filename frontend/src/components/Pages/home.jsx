@@ -6,7 +6,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate('/gallery'); // This will redirect to the /gallery route
+    navigate('/gallery'); 
   };
   return (
     <div

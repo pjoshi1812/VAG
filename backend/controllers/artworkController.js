@@ -35,14 +35,6 @@ export const getArtworks = async (req, res) => {
 };
 
 
-// export const getArtworks = async (req, res) => {
-//   try {
-//     const artworks = await Artwork.find().sort({ createdAt: -1 });
-//     res.json(artworks);
-//   } catch (error) {
-//     res.status(500).json({ message: "Failed to fetch artworks" });
-//   }
-// };
 
 export const deleteArtwork = async (req, res) => {
   try {
